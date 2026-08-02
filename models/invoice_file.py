@@ -1,27 +1,24 @@
 from dataclasses import dataclass
-from pathlib import Path
 
 
 @dataclass
 class InvoiceFile:
-    path: Path
 
-    @property
-    def name(self):
-        return self.path.name
+    path: str
+    extension: str
+    pages: int = 1
 
-    @property
-    def extension(self):
-        return self.path.suffix.upper().replace(".", "")
+    def is_pdf(self):
 
-    @property
-    def size_kb(self):
-        return round(self.path.stat().st_size / 1024, 2)
+        return self.extension.lower() == ".pdf"
 
-    @property
-    def folder(self):
-        return str(self.path.parent)
+    def is_image(self):
 
-    @property
-    def status(self):
-        return "جاهز"
+        return self.extension.lower() in [
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".bmp",
+            ".tif",
+            ".tiff",
+        ]
