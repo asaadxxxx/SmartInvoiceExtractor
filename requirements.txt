@@ -1,0 +1,8 @@
+PySide6
+paddleocr
+paddlepaddle
+PyMuPDF
+Pillow
+openpyxl
+opencv-python
+numpy
