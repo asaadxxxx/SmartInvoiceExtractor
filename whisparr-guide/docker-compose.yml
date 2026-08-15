@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: whisparr-postgres
+    environment:
+      POSTGRES_DB: whisparr-main
+      POSTGRES_USER: whisparr
+      POSTGRES_PASSWORD: your_secure_password_here
+      PGTZ: "Africa/Cairo"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - whisparr-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U whisparr"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  whisparr:
+    image: ghcr.io/hotio/whisparr:latest
+    container_name: whisparr
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Africa/Cairo
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: whisparr
+      POSTGRES_PASSWORD: your_secure_password_here
+      POSTGRES_MAIN_DB: whisparr-main
+      POSTGRES_LOG_DB: whisparr-log
+    ports:
+      - "6969:6969"
+    volumes:
+      - whisparr_config:/config
+      - /path/to/tv/shows:/tv
+      - /path/to/downloads:/downloads
+    networks:
+      - whisparr-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # اختياري: qBittorrent للتحميل
+  qbittorrent:
+    image: ghcr.io/hotio/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Africa/Cairo
+      WEBUI_PORT: 8080
+    ports:
+      - "6881:6881"
+      - "6881:6881/udp"
+      - "8080:8080"
+    volumes:
+      - qbittorrent_config:/config
+      - /path/to/downloads:/downloads
+    networks:
+      - whisparr-network
+    restart: unless-stopped
+
+  # اختياري: Prowlarr لإدارة Indexers
+  prowlarr:
+    image: ghcr.io/hotio/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Africa/Cairo
+    ports:
+      - "9696:9696"
+    volumes:
+      - prowlarr_config:/config
+    networks:
+      - whisparr-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  whisparr_config:
+    driver: local
+  qbittorrent_config:
+    driver: local
+  prowlarr_config:
+    driver: local
+
+networks:
+  whisparr-network:
+    driver: bridge

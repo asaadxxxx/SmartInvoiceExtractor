@@ -1,0 +1,64 @@
+name: ➕ Add Series Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      series_name:
+        description: 'اسم البرنامج (Series name)'
+        required: true
+      quality_profile:
+        description: 'Quality Profile'
+        required: true
+        default: 'HD - 1080p'
+      root_folder:
+        description: 'Root Folder Path'
+        required: true
+        default: '/tv'
+
+jobs:
+  add-series:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🔍 Search for series
+        id: search
+        env:
+          WHISPARR_URL: ${{ secrets.WHISPARR_URL }}
+          WHISPARR_API_KEY: ${{ secrets.WHISPARR_API_KEY }}
+          SERIES_NAME: ${{ github.event.inputs.series_name }}
+        run: |
+          SEARCH_RESULT=$(curl -s "$WHISPARR_URL/api/v3/series/lookup" \
+            -H "X-Api-Key: $WHISPARR_API_KEY" \
+            --data-urlencode "term=$SERIES_NAME")
+          echo "SEARCH_RESULT=$SEARCH_RESULT" >> $GITHUB_ENV
+          echo $SEARCH_RESULT | jq '.' > /tmp/search_results.json
+          cat /tmp/search_results.json
+
+      - name: ➕ Add series
+        env:
+          WHISPARR_URL: ${{ secrets.WHISPARR_URL }}
+          WHISPARR_API_KEY: ${{ secrets.WHISPARR_API_KEY }}
+          QUALITY_PROFILE: ${{ github.event.inputs.quality_profile }}
+          ROOT_FOLDER: ${{ github.event.inputs.root_folder }}
+        run: |
+          # احصل على معرّف Quality Profile
+          PROFILE_ID=$(curl -s "$WHISPARR_URL/api/v3/qualityprofile" \
+            -H "X-Api-Key: $WHISPARR_API_KEY" | jq -r ".[] | select(.name==\"$QUALITY_PROFILE\") | .id")
+          
+          # احصل على معرّف Root Folder
+          FOLDER_ID=$(curl -s "$WHISPARR_URL/api/v3/rootfolder" \
+            -H "X-Api-Key: $WHISPARR_API_KEY" | jq -r ".[] | select(.path==\"$ROOT_FOLDER\") | .id")
+          
+          echo "Profile ID: $PROFILE_ID, Folder ID: $FOLDER_ID"
+
+      - name: 💬 Send notification
+        uses: tsickert/discord-webhook@v1
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          content: |
+            ➕ **Series Added to Whisparr**
+            Series: ${{ github.event.inputs.series_name }}
+            Quality: ${{ github.event.inputs.quality_profile }}
+            Status: ${{ job.status }}

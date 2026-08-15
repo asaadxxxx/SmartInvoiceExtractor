@@ -1,0 +1,46 @@
+name: 📥 Check Download Status
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # كل 30 دقيقة
+  workflow_dispatch:
+
+jobs:
+  check-downloads:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🔍 Get download queue status
+        id: get_queue
+        env:
+          WHISPARR_URL: ${{ secrets.WHISPARR_URL }}
+          WHISPARR_API_KEY: ${{ secrets.WHISPARR_API_KEY }}
+        run: |
+          QUEUE=$(curl -s "$WHISPARR_URL/api/v3/queue" \
+            -H "X-Api-Key: $WHISPARR_API_KEY" | jq '.')
+          echo "QUEUE_STATUS=$QUEUE" >> $GITHUB_ENV
+          QUEUE_COUNT=$(echo $QUEUE | jq 'length')
+          echo "QUEUE_COUNT=$QUEUE_COUNT" >> $GITHUB_ENV
+
+      - name: 💬 Send summary via Discord
+        uses: tsickert/discord-webhook@v1
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          content: |
+            📥 **Whisparr Download Status**
+            Current queue items: ${{ env.QUEUE_COUNT }}
+            Last checked: $(date)
+            Status: ✅ Active
+
+      - name: 📊 Check failed downloads
+        env:
+          WHISPARR_URL: ${{ secrets.WHISPARR_URL }}
+          WHISPARR_API_KEY: ${{ secrets.WHISPARR_API_KEY }}
+        run: |
+          FAILED=$(curl -s "$WHISPARR_URL/api/v3/queue/failed" \
+            -H "X-Api-Key: $WHISPARR_API_KEY" | jq 'length')
+          if [ "$FAILED" -gt 0 ]; then
+            echo "⚠️ Found $FAILED failed downloads"
+          fi

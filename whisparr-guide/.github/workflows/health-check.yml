@@ -1,0 +1,55 @@
+name: 🏥 Whisparr Health Check
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # كل ساعة
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🔍 Check Whisparr service
+        id: whisparr_check
+        env:
+          WHISPARR_URL: ${{ secrets.WHISPARR_URL }}
+          WHISPARR_API_KEY: ${{ secrets.WHISPARR_API_KEY }}
+        run: |
+          STATUS=$(curl -s -w "%{http_code}" -o /dev/null "$WHISPARR_URL/api/v3/health" \
+            -H "X-Api-Key: $WHISPARR_API_KEY")
+          if [ $STATUS -eq 200 ]; then
+            echo "STATUS=✅ Healthy" >> $GITHUB_ENV
+            echo "http_status=200" >> $GITHUB_OUTPUT
+          else
+            echo "STATUS=❌ Unhealthy (HTTP $STATUS)" >> $GITHUB_ENV
+            echo "http_status=$STATUS" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📈 Get system stats
+        env:
+          WHISPARR_URL: ${{ secrets.WHISPARR_URL }}
+          WHISPARR_API_KEY: ${{ secrets.WHISPARR_API_KEY }}
+        run: |
+          curl -s "$WHISPARR_URL/api/v3/system/status" \
+            -H "X-Api-Key: $WHISPARR_API_KEY" | jq '.' > /tmp/system_status.json
+          cat /tmp/system_status.json
+
+      - name: 💬 Send notification
+        if: always()
+        uses: tsickert/discord-webhook@v1
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          content: |
+            🏥 **Whisparr Health Report**
+            Service Status: ${{ env.STATUS }}
+            Timestamp: $(date)
+            Check Status: ${{ job.status }}
+
+      - name: 🚨 Alert on failure
+        if: steps.whisparr_check.outputs.http_status != '200'
+        run: |
+          echo "::error::Whisparr service is not responding!"
+          exit 1
