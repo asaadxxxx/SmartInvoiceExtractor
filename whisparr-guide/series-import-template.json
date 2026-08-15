@@ -1,0 +1,112 @@
+[
+  {
+    "title": "Game of Thrones",
+    "searchName": "Game of Thrones",
+    "years": "2011-2019",
+    "rating": "TV-MA",
+    "description": "Nine noble families fight for control over the lands of Westeros, while an ancient enemy returns after being dormant for millennia.",
+    "tvdbId": 121361,
+    "imdbId": "tt0944947",
+    "quality": "1080p",
+    "language": "en"
+  },
+  {
+    "title": "The Sopranos",
+    "searchName": "The Sopranos",
+    "years": "1999-2007",
+    "rating": "TV-MA",
+    "description": "New Jersey mob boss Tony Soprano deals with the problems of his illegal empire and his family while seeking therapy.",
+    "tvdbId": 8711,
+    "imdbId": "tt0141842",
+    "quality": "720p",
+    "language": "en"
+  },
+  {
+    "title": "Breaking Bad",
+    "searchName": "Breaking Bad",
+    "years": "2008-2013",
+    "rating": "TV-MA",
+    "description": "A high school chemistry teacher turned meth cook partners with a former student to produce crystal meth.",
+    "tvdbId": 81189,
+    "imdbId": "tt0903747",
+    "quality": "1080p",
+    "language": "en"
+  },
+  {
+    "title": "Dexter",
+    "searchName": "Dexter",
+    "years": "2006-2013",
+    "rating": "TV-14",
+    "description": "A forensic analyst and serial killer named Dexter Morgan hides his murderous nature while helping law enforcement.",
+    "tvdbId": 79349,
+    "imdbId": "tt0773262",
+    "quality": "1080p",
+    "language": "en"
+  },
+  {
+    "title": "True Detective",
+    "searchName": "True Detective",
+    "years": "2014-2019",
+    "rating": "TV-MA",
+    "description": "Two detectives hunt a serial killer while dealing with their personal demons in Louisiana.",
+    "tvdbId": 262445,
+    "imdbId": "tt2356777",
+    "quality": "1080p",
+    "language": "en"
+  },
+  {
+    "title": "Boardwalk Empire",
+    "searchName": "Boardwalk Empire",
+    "years": "2010-2014",
+    "rating": "TV-MA",
+    "description": "An Atlantic City gangster pursues wealth and power in Prohibition-era New Jersey.",
+    "tvdbId": 84947,
+    "imdbId": "tt0979432",
+    "quality": "1080p",
+    "language": "en"
+  },
+  {
+    "title": "The Wire",
+    "searchName": "The Wire",
+    "years": "2002-2008",
+    "rating": "TV-MA",
+    "description": "A gritty drama depicting the lives of both law enforcement and criminals in Baltimore.",
+    "tvdbId": 4852,
+    "imdbId": "tt0749414",
+    "quality": "720p",
+    "language": "en"
+  },
+  {
+    "title": "Westworld",
+    "searchName": "Westworld",
+    "years": "2016-2022",
+    "rating": "TV-MA",
+    "description": "In a futuristic Western theme park populated by android hosts, guests can live out their fantasies.",
+    "tvdbId": 286564,
+    "imdbId": "tt5574490",
+    "quality": "1080p",
+    "language": "en"
+  },
+  {
+    "title": "The Handmaid's Tale",
+    "searchName": "The Handmaid's Tale",
+    "years": "2017-present",
+    "rating": "TV-MA",
+    "description": "A woman is forced into servitude in a dystopian future where fertility rates have collapsed.",
+    "tvdbId": 289667,
+    "imdbId": "tt5834204",
+    "quality": "1080p",
+    "language": "en"
+  },
+  {
+    "title": "Orange Is the New Black",
+    "searchName": "Orange Is the New Black",
+    "years": "2013-2019",
+    "rating": "TV-MA",
+    "description": "A white woman is convicted and sent to a prison where she encounters different types of women inmates.",
+    "tvdbId": 267417,
+    "imdbId": "tt2372162",
+    "quality": "1080p",
+    "language": "en"
+  }
+]
